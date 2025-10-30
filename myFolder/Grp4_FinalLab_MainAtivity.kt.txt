@@ -1,0 +1,78 @@
+package com.example.mainactivity
+
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import android.widget.*
+import android.view.View
+import android.widget.AdapterView
+import android.widget.FrameLayout
+
+class MainActivity : AppCompatActivity() {
+
+    private var isImageOne = true
+    private lateinit var imageSwitcher: ImageSwitcher
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val countries = arrayOf("USA", "Canada", "Mexico", "Germany", "Japan", "France", "Spain")
+
+        val adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_dropdown_item_1line,
+            countries
+        )
+
+        val countryInput = findViewById<AutoCompleteTextView>(R.id.autoCompleteTextView)
+        countryInput.setAdapter(adapter)
+
+        val spinner = findViewById<Spinner>(R.id.spinner)
+        spinner.setAdapter(adapter)
+
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                showToast("Spinner Selected: ${parent.getItemAtPosition(position)}")
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+
+        val toggleButton = findViewById<ToggleButton>(R.id.toggleButton)
+        toggleButton.setOnCheckedChangeListener { _, isChecked ->
+            showToast("Toggle is ${if (isChecked) "ON" else "OFF"}")
+        }
+
+        imageSwitcher = findViewById<ImageSwitcher>(R.id.imageSwitcher)
+
+        imageSwitcher.setFactory {
+            ImageView(applicationContext).apply {
+                layoutParams = FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.MATCH_PARENT
+                )
+                scaleType = ImageView.ScaleType.FIT_CENTER
+            }
+        }
+        imageSwitcher.setImageResource(R.drawable.image1)
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    fun onButtonClick(view: View) {
+        when (view.id) {
+            R.id.standardButton -> showToast("Standard Button Pressed!TOAST!")
+            R.id.imageButton -> showToast("Image Button Pressed!TOAST!")
+        }
+    }
+
+    fun switchImage(view: View) {
+        if (isImageOne) {
+            imageSwitcher.setImageResource(R.drawable.image2)
+        } else {
+            imageSwitcher.setImageResource(R.drawable.image1)
+        }
+        isImageOne = !isImageOne
+    }
+}
